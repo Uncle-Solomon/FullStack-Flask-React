@@ -18,7 +18,7 @@ def create_app(config):
     migrate = Migrate(app, db)
     JWTManager(app)
 
-    api = Api(app, doc='/docs')
+    api = Api(app, doc='/documentation')
 
     api.add_namespace(recipe_ns)
     api.add_namespace(auth_ns)

@@ -28,7 +28,7 @@ class RecipeResource(Resource):
     @recipe_ns.expect(recipe_model)
     @jwt_required()
     def post(self):
-        # Create a new recipe
+        # Create a new recipNew Requeste
         data = request.get_json()
         new_recipe = Recipe(
             title=data.get('title'), 
