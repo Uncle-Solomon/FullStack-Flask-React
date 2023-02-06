@@ -16,12 +16,197 @@ class APITestCase(unittest.TestCase):
             db.create_all()
 
     def test_hello_world(self):
-        hello_response = self.client.get('/recipe/hello_world')
+        hello_response = self.client.get('/recipe/hello')
 
-        json = jsonify(hello_response)
+        json = hello_response.json
 
-        self.assertEqual(json, {"message":"Hello World"})
+        self.assertEqual(json, {'message': 'Hello World'})
+        # print(json)
 
+    def test_signup(self):
+        signup_response = self.client.post(
+            '/auth/signup', 
+            json = {
+                "username": "testuser", 
+                "email": "testuser@tst.com", 
+                "password": "password"
+                }, 
+            content_type='application/json')
+
+        status_code = signup_response.status_code
+
+        self.assertEqual(status_code,201)
+    
+    def test_login(self):
+        signup_response = self.client.post(
+            '/auth/signup', 
+            json = {
+                "username": "testuser", 
+                "email": "testuser@tst.com", 
+                "password": "password"
+                }, 
+            content_type='application/json')
+
+        login_response = self.client.post(
+            '/auth/login', 
+            json = {
+                "username": "testuser", 
+                "password": "password"
+                }, 
+            content_type='application/json')
+
+        status_code = login_response.status_code
+
+        self.assertEqual(status_code,200)
+
+
+    def test_get_all_recipes(self):
+        response = self.client.get('/recipe/recipes')
+
+        json = response.json
+
+        status_code = response.status_code
+
+        self.assertEqual(status_code,200)
+
+    def test_get_one_recipe(self):
+        id=1
+        response = self.client.get('/recipe/recipes/{}'.format(id))
+
+        status_code = response.status_code
+
+        self.assertEqual(status_code, 404)
+
+
+    def test_create_recipe(self):
+        signup_response = self.client.post(
+            '/auth/signup', 
+            json = {
+                "username": "testuser", 
+                "email": "testuser@tst.com", 
+                "password": "password"
+                }, 
+            content_type='application/json')
+
+        login_response = self.client.post(
+            '/auth/login', 
+            json = {
+                "username": "testuser", 
+                "password": "password"
+                }, 
+            content_type='application/json')
+
+        access_token = login_response.json['access_token']
+
+
+        create_recipe_response = self.client.post(
+            '/recipe/recipes',
+            json={
+                "title": "Test Cookie",
+                "description": "test description",
+            },
+            headers={
+                'Authorization': 'Bearer {}'.format(access_token)
+            }
+        )
+
+        status_code = create_recipe_response.status_code
+
+        print(create_recipe_response.json)
+
+        self.assertEqual(status_code,201)
+
+    def test_update_recipe(self):
+        signup_response = self.client.post(
+            '/auth/signup', 
+            json = {
+                "username": "testuser", 
+                "email": "testuser@tst.com", 
+                "password": "password"
+                }, 
+            content_type='application/json')
+
+        login_response = self.client.post(
+            '/auth/login', 
+            json = {
+                "username": "testuser", 
+                "password": "password"
+                }, 
+            content_type='application/json')
+
+        access_token = login_response.json['access_token']
+
+
+        create_recipe_response = self.client.post(
+            '/recipe/recipes',
+            json={
+                "title": "Test Cookie",
+                "description": "test description",
+            },
+            headers={
+                'Authorization': 'Bearer {}'.format(access_token)
+            }
+        )
+
+        id = 1
+
+        update_recipe_response = self.client.put(
+            f'/recipe/recipes/{id}',
+            json={
+            "title": "Updated Test Cookie",
+            "description": "Updated description",
+            },
+            headers={
+                "Authorization": 'Bearer {}'.format(access_token)
+            }
+        )
+
+        #print(update_recipe_response.json)
+        status_code = update_recipe_response.status_code
+        self.assertEqual(status_code,200)
+
+    def test_delete_recipe(self):
+        signup_response = self.client.post(
+            '/auth/signup', 
+            json = {
+                "username": "testuser", 
+                "email": "testuser@tst.com", 
+                "password": "password"
+                }, 
+            content_type='application/json')
+
+        login_response = self.client.post(
+            '/auth/login', 
+            json = {
+                "username": "testuser", 
+                "password": "password"
+                }, 
+            content_type='application/json')
+
+        access_token = login_response.json['access_token']
+
+
+        create_recipe_response = self.client.post(
+            '/recipe/recipes',
+            json={
+                "title": "Test Cookie",
+                "description": "test description",
+            },
+            headers={
+                'Authorization': 'Bearer {}'.format(access_token)
+            }
+        )
+
+        id = 1
+        delete_recipe_response = self.client.delete(
+            f'/recipe/recipes/{id}',
+            headers={
+                "Authorization": 'Bearer {}'.format(access_token)
+            }
+        )
+
+        status_code = delete_recipe_response.status_code
+        self.assertEqual(status_code,200)
 
     def tearDown(self):
         with self.app.app_context():
