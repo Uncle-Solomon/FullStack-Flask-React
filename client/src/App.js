@@ -1,27 +1,25 @@
 import logo from './logo.svg';
 import './App.css';
 import { useEffect, useState } from 'react';
+import { 
+  BrowserRouter as Router,
+  Switch,
+  Route
+} from'react-router-dom';
+import NavBar from './components/navbar';
 
 function App() {
 
-  useEffect(
-    () => {
-      fetch('/recipe/hello')
-      .then(response => response.json())
-      .then(data=>{
-        console.log(data)
-        setMessage(data.message)
-      })
-      .catch(err=>console.log(err))
-    },
-    []
-  )
-  const [message, setMessage] = useState('')
   return (
-    <div className="App">
-      {message}
-    </div>
-  );
+    <Router>
+    <NavBar />
+    <Switch>
+
+    </Switch>
+    </Router>
+  )
+    
+    
 }
 
 export default App;
